@@ -1,43 +1,25 @@
+// Mobile menu
+const menuBtn = document.getElementById('menuBtn');
+const navLinks = document.getElementById('navLinks');
+menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('a').forEach(a =>
+  a.addEventListener('click', () => navLinks.classList.remove('open'))
+);
 
-const sections = document.querySelectorAll('.content .block');
-const links = document.querySelectorAll('#sideNav a');
+// Reveal on scroll
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-// Show one section at a time
-function showTab(id) {
-  sections.forEach(section => {
-    const isActive = section.id === id;
-
-    section.classList.toggle('active-tab', isActive);
-    section.classList.toggle('show', isActive);
-    section.setAttribute('aria-hidden', String(!isActive));
-  });
-
-  links.forEach(link => {
-    const isActive = link.getAttribute('href') === '#' + id;
-
-    link.classList.toggle('active', isActive);
-
-    if (isActive) {
-      link.setAttribute('aria-current', 'page');
-    } else {
-      link.removeAttribute('aria-current');
-    }
-  });
-}
-
-// Sidebar tab clicks
-links.forEach(link => {
-  link.addEventListener('click', event => {
-    event.preventDefault();
-
-    const id = link.getAttribute('href').slice(1);
-    showTab(id);
-  });
+// Active link highlight
+const sections = document.querySelectorAll('main section[id]');
+const links = navLinks.querySelectorAll('a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
 });
 
-// Open Profile by default
-showTab('profile');
-
 // Footer year
-document.getElementById('year').textContent =
-  new Date().getFullYear();
+document.getElementById('year').textContent = new Date().getFullYear();
